@@ -44,7 +44,6 @@ const stubSession = (on: Parameters<TestBody>[1], cwd: string, files = FILES, en
     e.path in files ? { value: JSON.stringify(files[e.path]) } : { deny: 'ENOENT' },
   )
   on('session.start', () => ({ cwd }))
-  on('classic.SessionStart', () => ({}))
   // Stands for what other mods draw in the shared band
   on('ui.render', () => ({ type: 'Text', props: {}, children: ['another mod'] }))
   return clock
@@ -82,9 +81,11 @@ test('outside a Salesforce project the band is left to others', async ($, on) =>
   }
 })
 
-test('the org comes back after /clear', async ($, on) => {
-  stubSession(on, PROJECT)
-  await $.classic.SessionStart({ source: 'clear' })
+test('the org comes back after /clear, at the next refresh', async ($, on) => {
+  const clock = stubSession(on, PROJECT)
+  await $.session.start({ surface: 'terminal', isInteractive: true, cwd: PROJECT })
+  // /clear resets $.state; the 15-second refresh reads the org again
+  await clock.advance(15_000)
 
   const ui = await $.ui.mount({ ...BAND, surface: 'terminal' })
   expect(await ui.find({ type: 'Text', text: 'my-scratch' })).toBeDefined()

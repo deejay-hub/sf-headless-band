@@ -1,6 +1,6 @@
 {
   "name": "sf-headless-band",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shows your Salesforce default org and the Salesforce MCP servers Claude can reach, with each org's type and scratch org expiry, above the prompt",
   "author": {
     "name": "Dave Norris",

@@ -130,13 +130,9 @@ export const register: Register = on => {
     }
   })
 
-  // /clear, /resume and /branch reset $.state without a new session.start
-  on('classic.SessionStart', { source: ['clear', 'resume', 'fork'] }, async ($, e, next) => {
-    const result = await next(e)
-    await refresh($)
-    return result
-  })
-
+  // /clear, /resume and /branch reset $.state without a new session.start; the
+  // 15-second refresh and turn.complete bring the band back. No classic.SessionStart
+  // hook: a managed plugin above (cc-plugin-sec-default) continues past user hooks there
   on('classic.CwdChanged', async ($, e, next) => {
     const result = await next(e)
     await refresh($)
